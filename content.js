@@ -200,9 +200,9 @@ function mountListingAssistant() {
     </style>
     <main class="panel"><header><h1>OlaHub</h1><p>Listing Assistant</p></header>
       <section><h2>Select size</h2><div class="sizes" id="sizes"></div></section>
-      <aside class="reference"><div class="ref-title">Size reference (for info only)</div><div><span>US</span><b id="ref-us">11</b></div><div><span>UK</span><b id="ref-uk">10</b></div><div><span>EU</span><b id="ref-eu">45</b></div></aside>
+      <aside class="reference"><div class="ref-title">Size reference (for info only)</div><div><span>US</span><b id="ref-us">—</b></div><div><span>UK</span><b id="ref-uk">—</b></div><div><span>EU</span><b id="ref-eu">—</b></div></aside>
       <section class="fields"><h2>Fields to update</h2><div class="checks"><label><input type="checkbox" name="title" checked> Title</label><label><input type="checkbox" name="us" checked> US Shoe Size</label><label><input type="checkbox" name="uk" checked> UK Shoe Size</label><label><input type="checkbox" name="eu" checked> EU Shoe Size</label></div></section>
-      <button id="apply">Apply Changes</button><p id="status" role="status" aria-live="polite">Ready</p>
+      <button id="apply" disabled>Apply Changes</button><p id="status" role="status" aria-live="polite">Detecting current US shoe size…</p>
     </main>`;
   document.documentElement.append(host);
 
@@ -212,10 +212,14 @@ function mountListingAssistant() {
     { us: "8", uk: "7", eu: "41" }, { us: "9", uk: "8", eu: "42" },
     { us: "10", uk: "9", eu: "44" }, { us: "11", uk: "10", eu: "45" }
   ];
-  let selected = sizes[7];
+  let selected = null;
+  let manuallySelected = false;
   const sizeGrid = shadow.querySelector("#sizes");
-  const choose = item => {
+  const applyButton = shadow.querySelector("#apply");
+  const choose = (item, manual = false) => {
     selected = item;
+    if (manual) manuallySelected = true;
+    applyButton.disabled = false;
     for (const button of sizeGrid.querySelectorAll("button")) {
       const active = button.dataset.us === item.us;
       button.classList.toggle("selected", active);
@@ -226,10 +230,16 @@ function mountListingAssistant() {
   for (const item of sizes) {
     const button = document.createElement("button");
     button.type = "button"; button.className = "size"; button.textContent = `M${item.us}`;
-    button.dataset.us = item.us; button.addEventListener("click", () => choose(item)); sizeGrid.append(button);
+    button.dataset.us = item.us; button.addEventListener("click", () => choose(item, true)); sizeGrid.append(button);
   }
-  choose(selected);
+  const detection = waitFor(() => {
+    const button = [...document.querySelectorAll('button[name="attributes.US Shoe Size"]')].find(isVisible);
+    if (!button) return null;
+    const match = button.textContent.trim().match(/\b(\d+(?:\.\d+)?)\b/);
+    return match ? { button, us: match[1] } : null;
+  }, 15000);
   shadow.querySelector("#apply").addEventListener("click", async event => {
+    if (!selected) return;
     const applyButton = event.currentTarget;
     const fields = Object.fromEntries([...shadow.querySelectorAll(".checks input")].map(input => [input.name, input.checked]));
     const status = shadow.querySelector("#status");
@@ -248,6 +258,20 @@ function mountListingAssistant() {
       finishProgressOverlay("Update failed", error.message || "An unexpected error occurred.", false);
     } finally {
       applyButton.disabled = false;
+    }
+  });
+  detection.then(detected => {
+    if (manuallySelected) return;
+    if (!detected) {
+      shadow.querySelector("#status").textContent = "Could not detect the current size. Choose a size to continue.";
+      return;
+    }
+    const match = sizes.find(item => item.us === detected.us);
+    if (match) {
+      choose(match);
+      shadow.querySelector("#status").textContent = `Detected current US size ${match.us} (M${match.us})`;
+    } else {
+      shadow.querySelector("#status").textContent = `Detected US size ${detected.us}; choose a supported size M4–M11`;
     }
   });
 }
@@ -303,3 +327,4 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     });
   return true;
 });
+
