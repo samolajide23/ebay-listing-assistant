@@ -1,6 +1,6 @@
 # OlaHub eBay Listing Assistant
 
-A Chromium Manifest V3 extension for Chrome, Edge, and Opera. It targets eBay US and UK listing pages and currently supports men's sizes M4–M11. On eBay's Sell Similar listing page (`/lstng?mode=SellSimilarItem`), it opens its size assistant panel automatically.
+A Chromium Manifest V3 extension for Chrome, Edge, and Opera. It targets eBay US and UK listing pages and currently supports men's sizes M4–M11. On eBay's Sell Similar listing page (`/lstng?mode=SellSimilarItem`), it opens its size assistant panel automatically and detects the current US Shoe Size when eBay's field is available.
 
 ## Load it locally
 
@@ -25,3 +25,4 @@ The extension changes fields in the current page only. Review the listing and us
 - `manifest.json` – extension permissions and eBay page matching
 - `popup.html`, `popup.css`, `popup.js` – size picker and controls
 - `content.js` – applies selected values to matching form controls
+
