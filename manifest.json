@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "OlaHub eBay Listing Assistant",
+  "version": "0.1.0",
+  "description": "Quickly set shoe size fields on eBay listing pages.",
+  "permissions": ["activeTab"],
+  "host_permissions": ["https://www.ebay.com/*", "https://www.ebay.co.uk/*"],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "OlaHub Listing Assistant",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [{
+    "matches": ["https://www.ebay.com/*", "https://www.ebay.co.uk/*"],
+    "js": ["content.js"],
+    "run_at": "document_idle"
+  }]
+}

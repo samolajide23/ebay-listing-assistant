@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OlaHub Listing Assistant</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="panel">
+    <header><h1>OlaHub</h1><p>Listing Assistant</p></header>
+    <section aria-labelledby="size-heading">
+      <h2 id="size-heading">Select size</h2>
+      <div class="sizes" id="sizes" role="group" aria-label="Men's US shoe size"></div>
+    </section>
+    <aside class="reference" aria-label="Size reference">
+      <div class="ref-title">Size reference <span>(for info only)</span></div>
+      <div><span>US</span><b id="ref-us">11</b></div>
+      <div><span>EU</span><b id="ref-eu">45</b></div>
+      <div><span>UK</span><b id="ref-uk">10</b></div>
+    </aside>
+    <section class="fields" aria-labelledby="fields-heading">
+      <h2 id="fields-heading">Fields to update</h2>
+      <div class="checks">
+        <label><input type="checkbox" name="title" checked> Title</label>
+        <label><input type="checkbox" name="us" checked> US Shoe Size</label>
+        <label><input type="checkbox" name="uk" checked> UK Shoe Size</label>
+        <label><input type="checkbox" name="eu" checked> EU Shoe Size</label>
+      </div>
+    </section>
+    <button id="apply">Apply Changes</button>
+    <p id="status" role="status" aria-live="polite"></p>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>
